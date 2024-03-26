@@ -55,7 +55,7 @@ func TestUserManager_Update(t *testing.T) {
 	actualUser := &User{
 		Connection:  auth0.String("Username-Password-Authentication"),
 		Password:    auth0.String("I don't need one"),
-		AppMetadata: &appMetadata,
+		AppMetadata: appMetadata,
 	}
 	err := api.User.Update(context.Background(), expectedUser.GetID(), actualUser)
 
@@ -67,7 +67,7 @@ func TestUserManager_Update(t *testing.T) {
 			"kill_two_stones_with_one_bird",
 			"can_hear_sign_language",
 		},
-	}, *actualUser.AppMetadata)
+	}, actualUser.AppMetadata)
 	assert.Equal(t, "Username-Password-Authentication", actualUser.GetConnection())
 }
 
@@ -345,7 +345,7 @@ func TestUserIdentity_UnmarshalJSON(t *testing.T) {
 		`{"user_id":"1"}`:   {UserID: auth0.String("1")},
 		`{"user_id":"foo"}`: {UserID: auth0.String("foo")},
 		`{"profileData": {"picture": "some-picture.jpeg"}}`: {
-			ProfileData: &map[string]interface{}{
+			ProfileData: map[string]interface{}{
 				"picture": "some-picture.jpeg",
 			},
 		},
@@ -465,10 +465,10 @@ func givenAUser(t *testing.T) *User {
 		GivenName:     auth0.String("Chuck"),
 		FamilyName:    auth0.String("Sanchez"),
 		Nickname:      auth0.String("Chucky"),
-		UserMetadata:  &userMetadata,
+		UserMetadata:  userMetadata,
 		EmailVerified: auth0.Bool(true),
 		VerifyEmail:   auth0.Bool(false),
-		AppMetadata:   &appMetadata,
+		AppMetadata:   appMetadata,
 		Picture:       auth0.String("https://example-picture-url.jpg"),
 		Blocked:       auth0.Bool(false),
 	}

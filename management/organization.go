@@ -22,7 +22,7 @@ type Organization struct {
 
 	// Metadata associated with the organization, in the form of an object with
 	// string values (max 255 chars). Maximum of 10 metadata properties allowed.
-	Metadata *map[string]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 // OrganizationBranding holds branding information for an Organization.
@@ -31,7 +31,7 @@ type OrganizationBranding struct {
 	LogoURL *string `json:"logo_url,omitempty"`
 
 	// Color scheme used to customize the login pages.
-	Colors *map[string]string `json:"colors,omitempty"`
+	Colors map[string]string `json:"colors,omitempty"`
 }
 
 // OrganizationMember holds member information for an Organization.

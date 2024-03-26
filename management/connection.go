@@ -147,7 +147,7 @@ type Connection struct {
 	// connection name will be added as realm.
 	Realms *[]string `json:"realms,omitempty"`
 
-	Metadata *map[string]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 
 	// Provisioning Ticket URL is Ticket URL for Active Directory/LDAP, etc.
 	ProvisioningTicketURL *string `json:"provisioning_ticket_url,omitempty"`
@@ -305,10 +305,10 @@ type ConnectionOptions struct {
 
 	// Scripts for the connection.
 	// Allowed keys are: "get_user", "login", "create", "verify", "change_password", "delete"".
-	CustomScripts *map[string]string `json:"customScripts,omitempty"`
+	CustomScripts map[string]string `json:"customScripts,omitempty"`
 
 	// Configuration variables that can be used in custom scripts.
-	Configuration *map[string]string `json:"configuration,omitempty"`
+	Configuration map[string]string `json:"configuration,omitempty"`
 
 	StrategyVersion *int `json:"strategy_version,omitempty"`
 
@@ -908,7 +908,7 @@ type ConnectionOptionsOAuth2 struct {
 	PKCEEnabled        *bool     `json:"pkce_enabled,omitempty"`
 	// Scripts for the connection
 	// Allowed keys are: "fetchUserProfile"
-	Scripts *map[string]string `json:"scripts,omitempty"`
+	Scripts map[string]string `json:"scripts,omitempty"`
 
 	UpstreamParams map[string]interface{} `json:"upstream_params,omitempty"`
 }
