@@ -1593,8 +1593,8 @@ func TestClient_GetClientID(tt *testing.T) {
 }
 
 func TestClient_GetClientMetadata(tt *testing.T) {
-	var zeroValue map[string]interface{}
-	c := &Client{ClientMetadata: &zeroValue}
+	zeroValue := map[string]interface{}{}
+	c := &Client{ClientMetadata: zeroValue}
 	c.GetClientMetadata()
 	c = &Client{}
 	c.GetClientMetadata()
@@ -1673,8 +1673,8 @@ func TestClient_GetDescription(tt *testing.T) {
 }
 
 func TestClient_GetEncryptionKey(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &Client{EncryptionKey: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &Client{EncryptionKey: zeroValue}
 	c.GetEncryptionKey()
 	c = &Client{}
 	c.GetEncryptionKey()
@@ -2198,8 +2198,8 @@ func TestClientJWTConfiguration_GetLifetimeInSeconds(tt *testing.T) {
 }
 
 func TestClientJWTConfiguration_GetScopes(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &ClientJWTConfiguration{Scopes: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &ClientJWTConfiguration{Scopes: zeroValue}
 	c.GetScopes()
 	c = &ClientJWTConfiguration{}
 	c.GetScopes()
@@ -2486,8 +2486,8 @@ func TestConnection_GetIsDomainConnection(tt *testing.T) {
 }
 
 func TestConnection_GetMetadata(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &Connection{Metadata: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &Connection{Metadata: zeroValue}
 	c.GetMetadata()
 	c = &Connection{}
 	c.GetMetadata()
@@ -2637,8 +2637,8 @@ func TestConnectionOptions_GetBruteForceProtection(tt *testing.T) {
 }
 
 func TestConnectionOptions_GetConfiguration(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &ConnectionOptions{Configuration: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &ConnectionOptions{Configuration: zeroValue}
 	c.GetConfiguration()
 	c = &ConnectionOptions{}
 	c.GetConfiguration()
@@ -2647,8 +2647,8 @@ func TestConnectionOptions_GetConfiguration(tt *testing.T) {
 }
 
 func TestConnectionOptions_GetCustomScripts(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &ConnectionOptions{CustomScripts: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &ConnectionOptions{CustomScripts: zeroValue}
 	c.GetCustomScripts()
 	c = &ConnectionOptions{}
 	c.GetCustomScripts()
@@ -5224,8 +5224,8 @@ func TestConnectionOptionsOAuth2_GetScope(tt *testing.T) {
 }
 
 func TestConnectionOptionsOAuth2_GetScripts(tt *testing.T) {
-	var zeroValue map[string]string
-	c := &ConnectionOptionsOAuth2{Scripts: &zeroValue}
+	zeroValue := map[string]string{}
+	c := &ConnectionOptionsOAuth2{Scripts: zeroValue}
 	c.GetScripts()
 	c = &ConnectionOptionsOAuth2{}
 	c.GetScripts()
@@ -8090,8 +8090,8 @@ func TestGrantList_String(t *testing.T) {
 }
 
 func TestHook_GetDependencies(tt *testing.T) {
-	var zeroValue map[string]string
-	h := &Hook{Dependencies: &zeroValue}
+	zeroValue := map[string]string{}
+	h := &Hook{Dependencies: zeroValue}
 	h.GetDependencies()
 	h = &Hook{}
 	h.GetDependencies()
@@ -9567,8 +9567,8 @@ func TestOrganization_GetID(tt *testing.T) {
 }
 
 func TestOrganization_GetMetadata(tt *testing.T) {
-	var zeroValue map[string]string
-	o := &Organization{Metadata: &zeroValue}
+	zeroValue := map[string]string{}
+	o := &Organization{Metadata: zeroValue}
 	o.GetMetadata()
 	o = &Organization{}
 	o.GetMetadata()
@@ -9595,8 +9595,8 @@ func TestOrganization_String(t *testing.T) {
 }
 
 func TestOrganizationBranding_GetColors(tt *testing.T) {
-	var zeroValue map[string]string
-	o := &OrganizationBranding{Colors: &zeroValue}
+	zeroValue := map[string]string{}
+	o := &OrganizationBranding{Colors: zeroValue}
 	o.GetColors()
 	o = &OrganizationBranding{}
 	o.GetColors()
@@ -10326,8 +10326,8 @@ func TestResourceServer_GetName(tt *testing.T) {
 }
 
 func TestResourceServer_GetOptions(tt *testing.T) {
-	var zeroValue map[string]string
-	r := &ResourceServer{Options: &zeroValue}
+	zeroValue := map[string]string{}
+	r := &ResourceServer{Options: zeroValue}
 	r.GetOptions()
 	r = &ResourceServer{}
 	r.GetOptions()
@@ -10839,8 +10839,8 @@ func TestSAML2ClientAddon_GetMapIdentities(tt *testing.T) {
 }
 
 func TestSAML2ClientAddon_GetMappings(tt *testing.T) {
-	var zeroValue map[string]string
-	s := &SAML2ClientAddon{Mappings: &zeroValue}
+	zeroValue := map[string]string{}
+	s := &SAML2ClientAddon{Mappings: zeroValue}
 	s.GetMappings()
 	s = &SAML2ClientAddon{}
 	s.GetMappings()
@@ -12166,8 +12166,8 @@ func TestTicket_String(t *testing.T) {
 }
 
 func TestUser_GetAppMetadata(tt *testing.T) {
-	var zeroValue map[string]interface{}
-	u := &User{AppMetadata: &zeroValue}
+	zeroValue := map[string]interface{}{}
+	u := &User{AppMetadata: zeroValue}
 	u.GetAppMetadata()
 	u = &User{}
 	u.GetAppMetadata()
@@ -12426,8 +12426,8 @@ func TestUser_GetURL(tt *testing.T) {
 }
 
 func TestUser_GetUserMetadata(tt *testing.T) {
-	var zeroValue map[string]interface{}
-	u := &User{UserMetadata: &zeroValue}
+	zeroValue := map[string]interface{}{}
+	u := &User{UserMetadata: zeroValue}
 	u.GetUserMetadata()
 	u = &User{}
 	u.GetUserMetadata()
@@ -12630,8 +12630,8 @@ func TestUserIdentity_GetIsSocial(tt *testing.T) {
 }
 
 func TestUserIdentity_GetProfileData(tt *testing.T) {
-	var zeroValue map[string]interface{}
-	u := &UserIdentity{ProfileData: &zeroValue}
+	zeroValue := map[string]interface{}{}
+	u := &UserIdentity{ProfileData: zeroValue}
 	u.GetProfileData()
 	u = &UserIdentity{}
 	u.GetProfileData()

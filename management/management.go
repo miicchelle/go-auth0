@@ -118,6 +118,16 @@ type manager struct {
 	management *Management
 }
 
+func (m *Management) URIWithQuery(path string, q string) string {
+	url := &url.URL{
+		Scheme:   m.url.Scheme,
+		Host:     m.url.Host,
+		Path:     m.basePath + "/" + path,
+		RawQuery: q,
+	}
+	return url.String()
+}
+
 // New creates a new Auth0 Management client by authenticating using the
 // supplied client id and secret.
 func New(domain string, options ...Option) (*Management, error) {

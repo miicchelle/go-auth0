@@ -56,7 +56,7 @@ type Client struct {
 
 	// Client signing keys.
 	SigningKeys   []map[string]string `json:"signing_keys,omitempty"`
-	EncryptionKey *map[string]string  `json:"encryption_key,omitempty"`
+	EncryptionKey map[string]string   `json:"encryption_key,omitempty"`
 	SSO           *bool               `json:"sso,omitempty"`
 
 	// True to disable Single Sign On, false otherwise (default: false).
@@ -92,7 +92,7 @@ type Client struct {
 	// Maximum of 10 metadata properties allowed. Field names (max 255 chars) are alphanumeric and may
 	// only include the following special characters: :,-+=_*?"/\()<>@ [Tab] [Space].
 	// To remove a key, the value needs to be sent as null.
-	ClientMetadata *map[string]interface{} `json:"client_metadata,omitempty"`
+	ClientMetadata map[string]interface{} `json:"client_metadata,omitempty"`
 
 	Mobile *ClientMobile `json:"mobile,omitempty"`
 
@@ -125,7 +125,7 @@ type ClientJWTConfiguration struct {
 	// true
 	SecretEncoded *bool `json:"secret_encoded,omitempty"`
 
-	Scopes *map[string]string `json:"scopes,omitempty"`
+	Scopes map[string]string `json:"scopes,omitempty"`
 
 	// Algorithm used to sign JWTs. Can be "HS256" or "RS256"
 	Algorithm *string `json:"alg,omitempty"`
@@ -391,7 +391,7 @@ type SAML2ClientAddon struct {
 	// The mappings between the Auth0 user profile and the output attributes on the SAML Assertion.
 	// Each "name" represents the property name on the Auth0 user profile.
 	// Each "value" is the name (including namespace) for the resulting SAML attribute in the assertion.
-	Mappings *map[string]string `json:"mappings,omitempty"`
+	Mappings map[string]string `json:"mappings,omitempty"`
 	// The audience of the SAML Assertion.
 	Audience *string `json:"audience,omitempty"`
 	// The recipient of the SAML Assertion.

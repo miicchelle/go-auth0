@@ -70,7 +70,7 @@ type User struct {
 
 	// UserMetadata holds data that the user has read/write access to.
 	// For example color_preference, blog_url, etc.
-	UserMetadata *map[string]interface{} `json:"user_metadata,omitempty"`
+	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 
 	// Identities is a list of user identities for when accounts are linked.
 	Identities []*UserIdentity `json:"identities,omitempty"`
@@ -96,7 +96,7 @@ type User struct {
 	// For example roles, permissions, vip, etc.
 	// NOTE: Roles added to AppMetadata are not integrated with Auth0 Role-Based Access Control (RBAC).
 	// For RBAC, see the functions User.Roles, User.AssignRoles, and User.RemoveRoles.
-	AppMetadata *map[string]interface{} `json:"app_metadata,omitempty"`
+	AppMetadata map[string]interface{} `json:"app_metadata,omitempty"`
 
 	// The user's picture url.
 	Picture *string `json:"picture,omitempty"`
@@ -191,14 +191,14 @@ type UserIdentityLink struct {
 
 // UserIdentity holds values that validate a User's identity.
 type UserIdentity struct {
-	Connection        *string                 `json:"connection,omitempty"`
-	UserID            *string                 `json:"-"`
-	Provider          *string                 `json:"provider,omitempty"`
-	IsSocial          *bool                   `json:"isSocial,omitempty"`
-	AccessToken       *string                 `json:"access_token,omitempty"`
-	AccessTokenSecret *string                 `json:"access_token_secret,omitempty"`
-	RefreshToken      *string                 `json:"refresh_token,omitempty"`
-	ProfileData       *map[string]interface{} `json:"profileData,omitempty"`
+	Connection        *string                `json:"connection,omitempty"`
+	UserID            *string                `json:"-"`
+	Provider          *string                `json:"provider,omitempty"`
+	IsSocial          *bool                  `json:"isSocial,omitempty"`
+	AccessToken       *string                `json:"access_token,omitempty"`
+	AccessTokenSecret *string                `json:"access_token_secret,omitempty"`
+	RefreshToken      *string                `json:"refresh_token,omitempty"`
+	ProfileData       map[string]interface{} `json:"profileData,omitempty"`
 }
 
 // UnmarshalJSON is a custom deserializer for the UserIdentity type.
@@ -452,6 +452,11 @@ func (m *UserManager) Delete(ctx context.Context, id string, opts ...RequestOpti
 // See: https://auth0.com/docs/api/management/v2#!/Users/get_users
 func (m *UserManager) List(ctx context.Context, opts ...RequestOption) (ul *UserList, err error) {
 	err = m.management.Request(ctx, "GET", m.management.URI("users"), &ul, applyListDefaults(opts))
+	return
+}
+
+func (m *UserManager) ReadQuery(ctx context.Context, q string, opts ...RequestOption) (ul *UserList, err error) {
+	err = m.management.Request(ctx, "GET", m.management.URIWithQuery("users", q), &ul, applyListDefaults(opts))
 	return
 }
 

@@ -43,7 +43,7 @@ type ResourceServer struct {
 	// verifying the JWT sent to Auth0 for token introspection.
 	VerificationLocation *string `json:"verificationLocation,omitempty"`
 
-	Options *map[string]string `json:"options,omitempty"`
+	Options map[string]string `json:"options,omitempty"`
 
 	// Enables the enforcement of the authorization policies.
 	EnforcePolicies *bool `json:"enforce_policies,omitempty"`

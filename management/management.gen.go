@@ -1250,12 +1250,12 @@ func (c *Client) GetClientID() string {
 	return *c.ClientID
 }
 
-// GetClientMetadata returns the ClientMetadata field if it's non-nil, zero value otherwise.
+// GetClientMetadata returns the ClientMetadata map if it's non-nil, an empty map otherwise.
 func (c *Client) GetClientMetadata() map[string]interface{} {
 	if c == nil || c.ClientMetadata == nil {
 		return map[string]interface{}{}
 	}
-	return *c.ClientMetadata
+	return c.ClientMetadata
 }
 
 // GetClientSecret returns the ClientSecret field if it's non-nil, zero value otherwise.
@@ -1314,12 +1314,12 @@ func (c *Client) GetDescription() string {
 	return *c.Description
 }
 
-// GetEncryptionKey returns the EncryptionKey field if it's non-nil, zero value otherwise.
+// GetEncryptionKey returns the EncryptionKey map if it's non-nil, an empty map otherwise.
 func (c *Client) GetEncryptionKey() map[string]string {
 	if c == nil || c.EncryptionKey == nil {
 		return map[string]string{}
 	}
-	return *c.EncryptionKey
+	return c.EncryptionKey
 }
 
 // GetFormTemplate returns the FormTemplate field if it's non-nil, zero value otherwise.
@@ -1811,12 +1811,12 @@ func (c *ClientJWTConfiguration) GetLifetimeInSeconds() int {
 	return *c.LifetimeInSeconds
 }
 
-// GetScopes returns the Scopes field if it's non-nil, zero value otherwise.
+// GetScopes returns the Scopes map if it's non-nil, an empty map otherwise.
 func (c *ClientJWTConfiguration) GetScopes() map[string]string {
 	if c == nil || c.Scopes == nil {
 		return map[string]string{}
 	}
-	return *c.Scopes
+	return c.Scopes
 }
 
 // GetSecretEncoded returns the SecretEncoded field if it's non-nil, zero value otherwise.
@@ -2037,12 +2037,12 @@ func (c *Connection) GetIsDomainConnection() bool {
 	return *c.IsDomainConnection
 }
 
-// GetMetadata returns the Metadata field if it's non-nil, zero value otherwise.
+// GetMetadata returns the Metadata map if it's non-nil, an empty map otherwise.
 func (c *Connection) GetMetadata() map[string]string {
 	if c == nil || c.Metadata == nil {
 		return map[string]string{}
 	}
-	return *c.Metadata
+	return c.Metadata
 }
 
 // GetName returns the Name field if it's non-nil, zero value otherwise.
@@ -2156,20 +2156,20 @@ func (c *ConnectionOptions) GetBruteForceProtection() bool {
 	return *c.BruteForceProtection
 }
 
-// GetConfiguration returns the Configuration field if it's non-nil, zero value otherwise.
+// GetConfiguration returns the Configuration map if it's non-nil, an empty map otherwise.
 func (c *ConnectionOptions) GetConfiguration() map[string]string {
 	if c == nil || c.Configuration == nil {
 		return map[string]string{}
 	}
-	return *c.Configuration
+	return c.Configuration
 }
 
-// GetCustomScripts returns the CustomScripts field if it's non-nil, zero value otherwise.
+// GetCustomScripts returns the CustomScripts map if it's non-nil, an empty map otherwise.
 func (c *ConnectionOptions) GetCustomScripts() map[string]string {
 	if c == nil || c.CustomScripts == nil {
 		return map[string]string{}
 	}
-	return *c.CustomScripts
+	return c.CustomScripts
 }
 
 // GetDisableSelfServiceChangePassword returns the DisableSelfServiceChangePassword field if it's non-nil, zero value otherwise.
@@ -4216,12 +4216,12 @@ func (c *ConnectionOptionsOAuth2) GetScope() string {
 	return *c.Scope
 }
 
-// GetScripts returns the Scripts field if it's non-nil, zero value otherwise.
+// GetScripts returns the Scripts map if it's non-nil, an empty map otherwise.
 func (c *ConnectionOptionsOAuth2) GetScripts() map[string]string {
 	if c == nil || c.Scripts == nil {
 		return map[string]string{}
 	}
-	return *c.Scripts
+	return c.Scripts
 }
 
 // GetSetUserAttributes returns the SetUserAttributes field if it's non-nil, zero value otherwise.
@@ -6487,12 +6487,12 @@ func (g *GrantList) String() string {
 	return Stringify(g)
 }
 
-// GetDependencies returns the Dependencies field if it's non-nil, zero value otherwise.
+// GetDependencies returns the Dependencies map if it's non-nil, an empty map otherwise.
 func (h *Hook) GetDependencies() map[string]string {
 	if h == nil || h.Dependencies == nil {
 		return map[string]string{}
 	}
-	return *h.Dependencies
+	return h.Dependencies
 }
 
 // GetEnabled returns the Enabled field if it's non-nil, zero value otherwise.
@@ -7631,12 +7631,12 @@ func (o *Organization) GetID() string {
 	return *o.ID
 }
 
-// GetMetadata returns the Metadata field if it's non-nil, zero value otherwise.
+// GetMetadata returns the Metadata map if it's non-nil, an empty map otherwise.
 func (o *Organization) GetMetadata() map[string]string {
 	if o == nil || o.Metadata == nil {
 		return map[string]string{}
 	}
-	return *o.Metadata
+	return o.Metadata
 }
 
 // GetName returns the Name field if it's non-nil, zero value otherwise.
@@ -7652,12 +7652,12 @@ func (o *Organization) String() string {
 	return Stringify(o)
 }
 
-// GetColors returns the Colors field if it's non-nil, zero value otherwise.
+// GetColors returns the Colors map if it's non-nil, an empty map otherwise.
 func (o *OrganizationBranding) GetColors() map[string]string {
 	if o == nil || o.Colors == nil {
 		return map[string]string{}
 	}
-	return *o.Colors
+	return o.Colors
 }
 
 // GetLogoURL returns the LogoURL field if it's non-nil, zero value otherwise.
@@ -8209,12 +8209,12 @@ func (r *ResourceServer) GetName() string {
 	return *r.Name
 }
 
-// GetOptions returns the Options field if it's non-nil, zero value otherwise.
+// GetOptions returns the Options map if it's non-nil, an empty map otherwise.
 func (r *ResourceServer) GetOptions() map[string]string {
 	if r == nil || r.Options == nil {
 		return map[string]string{}
 	}
-	return *r.Options
+	return r.Options
 }
 
 // GetScopes returns the Scopes field if it's non-nil, zero value otherwise.
@@ -8605,12 +8605,12 @@ func (s *SAML2ClientAddon) GetMapIdentities() bool {
 	return *s.MapIdentities
 }
 
-// GetMappings returns the Mappings field if it's non-nil, zero value otherwise.
+// GetMappings returns the Mappings map if it's non-nil, an empty map otherwise.
 func (s *SAML2ClientAddon) GetMappings() map[string]string {
 	if s == nil || s.Mappings == nil {
 		return map[string]string{}
 	}
-	return *s.Mappings
+	return s.Mappings
 }
 
 // GetMapUnknownClaimsAsIs returns the MapUnknownClaimsAsIs field if it's non-nil, zero value otherwise.
@@ -9667,12 +9667,12 @@ func (t *Ticket) String() string {
 	return Stringify(t)
 }
 
-// GetAppMetadata returns the AppMetadata field if it's non-nil, zero value otherwise.
+// GetAppMetadata returns the AppMetadata map if it's non-nil, an empty map otherwise.
 func (u *User) GetAppMetadata() map[string]interface{} {
 	if u == nil || u.AppMetadata == nil {
 		return map[string]interface{}{}
 	}
-	return *u.AppMetadata
+	return u.AppMetadata
 }
 
 // GetBlocked returns the Blocked field if it's non-nil, zero value otherwise.
@@ -9875,12 +9875,12 @@ func (u *User) GetURL() string {
 	return *u.URL
 }
 
-// GetUserMetadata returns the UserMetadata field if it's non-nil, zero value otherwise.
+// GetUserMetadata returns the UserMetadata map if it's non-nil, an empty map otherwise.
 func (u *User) GetUserMetadata() map[string]interface{} {
 	if u == nil || u.UserMetadata == nil {
 		return map[string]interface{}{}
 	}
-	return *u.UserMetadata
+	return u.UserMetadata
 }
 
 // GetUsername returns the Username field if it's non-nil, zero value otherwise.
@@ -10034,12 +10034,12 @@ func (u *UserIdentity) GetIsSocial() bool {
 	return *u.IsSocial
 }
 
-// GetProfileData returns the ProfileData field if it's non-nil, zero value otherwise.
+// GetProfileData returns the ProfileData map if it's non-nil, an empty map otherwise.
 func (u *UserIdentity) GetProfileData() map[string]interface{} {
 	if u == nil || u.ProfileData == nil {
 		return map[string]interface{}{}
 	}
-	return *u.ProfileData
+	return u.ProfileData
 }
 
 // GetProvider returns the Provider field if it's non-nil, zero value otherwise.

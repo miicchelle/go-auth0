@@ -30,7 +30,7 @@ type SignupRequest struct {
 	Picture string `json:"picture,omitempty"`
 	// The user metadata to be associated with the user. If set, the field must be an object containing no more than ten properties.
 	// Property names can have a maximum of 100 characters, and property values must be strings of no more than 500 characters.
-	UserMetadata *map[string]interface{} `json:"user_metadata,omitempty"`
+	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 	// Extra parameters to be merged into the request body. Values set here will override any existing values.
 	ExtraParameters map[string]string `json:"-"`
 }
@@ -57,7 +57,7 @@ type SignupResponse struct {
 	Picture string `json:"picture,omitempty"`
 	// The user metadata to be associated with the user. If set, the field must be an object containing no more than ten properties.
 	// Property names can have a maximum of 100 characters, and property values must be strings of no more than 500 characters.
-	UserMetadata *map[string]interface{} `json:"user_metadata,omitempty"`
+	UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
 }
 
 // MarshalJSON implements the json.Unmarshaler interface.
