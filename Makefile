@@ -30,6 +30,7 @@ $(GO_BIN)/golangci-lint:
 	@go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 $(GO_BIN)/govulncheck:
+	${call print, "Installing govulncheck"}
 	@go install -v golang.org/x/vuln/cmd/govulncheck@latest
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ lint: $(GO_BIN)/golangci-lint ## Run linting on the go files
 
 check-vuln: $(GO_BIN)/govulncheck ## Check for vulnerabilities
 	@echo "==> Checking for vulnerabilities..."
-	@govulncheck -v ./...
+	@govulncheck -show verbose ./...
 
 check-getters: ## Check that struct field getters were generated
 	@echo "==> Checking that struct field getters were generated..."

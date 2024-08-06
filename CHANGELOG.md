@@ -1,5 +1,45 @@
 # Change Log
 
+## [v1.8.0](https://github.com/auth0/go-auth0/tree/v1.8.0) (2024-07-09)
+[Full Changelog](https://github.com/auth0/go-auth0/compare/v1.7.0...v1.8.0)
+
+**Added**
+- Add support for managing a connection's SCIM (System for Cross-domain Identity Management) configuration [\#419](https://github.com/auth0/go-auth0/pull/419) ([developerkunal](https://github.com/developerkunal))
+
+## [v1.7.0](https://github.com/auth0/go-auth0/tree/v1.7.0) (2024-06-14)
+[Full Changelog](https://github.com/auth0/go-auth0/compare/v1.6.0...v1.7.0)
+
+**Added**
+- Add is_signup_enabled field to OrganizationConnection [\#413](https://github.com/auth0/go-auth0/pull/413) ([developerkunal](https://github.com/developerkunal))
+
+## [v1.6.0](https://github.com/auth0/go-auth0/tree/v1.6.0) (2024-05-09)
+[Full Changelog](https://github.com/auth0/go-auth0/compare/v1.5.0...v1.6.0)
+
+**Added**
+- [GH-380] - Add User Refresh Token Management Functionality to SDK [\#404](https://github.com/auth0/go-auth0/pull/404) ([developerkunal](https://github.com/developerkunal))
+- [GH-366] - Add support for enabled_connections field in CreateOrganizationConnections [\#394](https://github.com/auth0/go-auth0/pull/394) ([developerkunal](https://github.com/developerkunal))
+
+**Fixed**
+- [GH-372] Fix unmarshaling issue with Wordpress strategy connections [\#398](https://github.com/auth0/go-auth0/pull/398) ([developerkunal](https://github.com/developerkunal))
+- [GH-336] - Fix Unmarshal JSON error as string [\#393](https://github.com/auth0/go-auth0/pull/393) ([developerkunal](https://github.com/developerkunal))
+
+## [v1.5.0](https://github.com/auth0/go-auth0/tree/v1.5.0) (2024-04-23)
+[Full Changelog](https://github.com/auth0/go-auth0/compare/v1.4.1...v1.5.0)
+
+**Added**
+- Send extra parameters with client credentials request [\#354](https://github.com/auth0/go-auth0/pull/354) ([weirdian2k3](https://github.com/weirdian2k3))
+- Add support for `oidc_logout` parameters [\#384](https://github.com/auth0/go-auth0/pull/384) ([developerkunal](https://github.com/developerkunal))
+- Add `show_as_button` field to Organization Enabled Connection [\#386](https://github.com/auth0/go-auth0/pull/386) ([developerkunal](https://github.com/developerkunal))
+
+**Fixed**
+- Fix sending unnecessary `null` body in requests [\#387](https://github.com/auth0/go-auth0/pull/387) ([developerkunal](https://github.com/developerkunal))
+
+## [v1.4.1](https://github.com/auth0/go-auth0/tree/v1.4.1) (2024-02-28)
+[Full Changelog](https://github.com/auth0/go-auth0/compare/v1.4.0...v1.4.1)
+
+**Added**
+- feat: Add Prompt Partials Support [\#341](https://github.com/auth0/go-auth0/pull/341) ([m3talsmith](https://github.com/m3talsmith)) [#360](https://github.com/auth0/go-auth0/pull/360) ([sergiught](https://github.com/sergiught))
+
 ## [v1.4.0](https://github.com/auth0/go-auth0/tree/v1.4.0) (2023-12-14)
 [Full Changelog](https://github.com/auth0/go-auth0/compare/v1.3.1...v1.4.0)
 

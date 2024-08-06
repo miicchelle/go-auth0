@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/auth0/go-auth0"
 	"github.com/auth0/go-auth0/internal/tag"
 )
 
@@ -154,6 +155,101 @@ type Connection struct {
 
 	// Display connection as a button.
 	ShowAsButton *bool `json:"show_as_button,omitempty"`
+}
+
+// SCIMConfiguration represents the SCIM configuration for a connection.
+// This struct is used primarily for enterprise connections.
+type SCIMConfiguration struct {
+	// ConnectionID is the connection's identifier.
+	ConnectionID *string `json:"connection_id,omitempty"`
+
+	// ConnectionName is the connection's name.
+	ConnectionName *string `json:"connection_name,omitempty"`
+
+	// Strategy is the connection's strategy.
+	Strategy *string `json:"strategy,omitempty"`
+
+	// TenantName is the tenant's name.
+	TenantName *string `json:"tenant_name,omitempty"`
+
+	// UserIDAttribute is the user ID attribute for generating unique user IDs.
+	// Optional. Defaults depend on the connection type (SAML, OIDC).
+	UserIDAttribute *string `json:"user_id_attribute,omitempty"`
+
+	// CreatedAt is the date and time when the SCIM configuration was created.
+	CreatedAt *string `json:"created_at,omitempty"`
+
+	// UpdatedAt is the date and time when the SCIM configuration was last updated.
+	UpdatedAt *string `json:"updated_at,omitempty"`
+
+	// Mapping is the user-provided mapping between Auth0 and SCIM fields.
+	// Optional. If not provided, defaults based on connection type.
+	Mapping *[]SCIMConfigurationMapping `json:"mapping,omitempty"`
+}
+
+// SCIMConfigurationMapping represents the mapping between Auth0 and SCIM fields.
+// This struct is used primarily for enterprise connections.
+type SCIMConfigurationMapping struct {
+	// Auth0 is the field location in the Auth0 schema.
+	Auth0 *string `json:"auth0,omitempty"`
+
+	// SCIM is the field location in the SCIM schema.
+	SCIM *string `json:"scim,omitempty"`
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (sc *SCIMConfiguration) MarshalJSON() ([]byte, error) {
+	type SCIMConfigurationSubset struct {
+		UserIDAttribute *string                     `json:"user_id_attribute,omitempty"`
+		Mapping         *[]SCIMConfigurationMapping `json:"mapping,omitempty"`
+	}
+
+	return json.Marshal(&SCIMConfigurationSubset{
+		UserIDAttribute: sc.UserIDAttribute,
+		Mapping:         sc.Mapping,
+	})
+}
+
+// SCIMTokens represents the SCIM tokens for a connection.
+// This struct is used primarily for enterprise connections.
+type SCIMTokens *[]SCIMToken
+
+// SCIMToken represents the SCIM token used by the client.
+// This struct is used primarily for enterprise connections.
+type SCIMToken struct {
+	// TokenID is the identifier associated with the token.
+	TokenID *string `json:"token_id,omitempty"`
+
+	// Token is the actual token value used for authentication.
+	Token *string `json:"token,omitempty"`
+
+	// Scopes is an array of strings representing the scopes that the token provides.
+	Scopes *[]string `json:"scopes,omitempty"`
+
+	// CreatedAt is the ISO8601 standard date string indicating when the token was created.
+	CreatedAt *string `json:"created_at,omitempty"`
+
+	// ValidUntil is the ISO8601 standard date string indicating when the token will expire.
+	ValidUntil *string `json:"valid_until,omitempty"`
+
+	// TokenLifeTime is the lifetime of the token in seconds. It must be greater than 900.
+	TokenLifeTime *int `json:"token_lifetime,omitempty"`
+
+	// LastUsedAt is the ISO8601 standard date string that says when the token was used. If never used it won’t be returned.
+	LastUsedAt *string `json:"last_used_at,omitempty"`
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (st *SCIMToken) MarshalJSON() ([]byte, error) {
+	type SCIMTokenSubset struct {
+		Scopes        *[]string `json:"scopes,omitempty"`
+		TokenLifeTime *int      `json:"token_lifetime,omitempty"`
+	}
+
+	return json.Marshal(&SCIMTokenSubset{
+		Scopes:        st.Scopes,
+		TokenLifeTime: st.TokenLifeTime,
+	})
 }
 
 // MarshalJSON implements the json.Marshaler interface.
@@ -325,6 +421,105 @@ type ConnectionOptions struct {
 
 	// Options for the passkey authentication method.
 	PasskeyOptions *PasskeyOptions `json:"passkey_options,omitempty"`
+
+	// Order of attributes for precedence in identification.
+	// Valid values: "email", "phone_number", "username"
+	// If Precedence is set, it must contain all three values ("email", "phone_number", "username") specifying the order to look up a user identity.
+	Precedence *[]string `json:"precedence,omitempty"`
+
+	// Attributes configures identifiers and other options for user attributes.
+	//
+	// The `attributes` field is a map that holds configuration for various identifiers.
+	//
+	// Each identifier (e.g., "phone_number", "email", "username") can include the following keys:
+	//   1. `active`: Specifies if the identifier is active. Example: {"active": bool}.
+	//   2. `profile_required`: Specifies if the identifier is required in the user's profile. Example: {"profile_required": bool}.
+	//   3. `signup`: Configures the identifier for signup. `verification` is not supported for the username identifier. Example: {"status": "required" | "optional" | "inactive", "verification": {"active": bool}}.
+	//
+	// Notes:
+	//   - For ConnectionOptionsPhoneNumberAttribute identifiers, the configuration is only available when the "identifier first" Prompt is enabled.
+	//   - At least one identifier must be active in `attributes`.
+	//   - Combining `requires_username` and `attributes` in the same configuration is not allowed.
+	//   - Combining `attributes` and `validation` in the same configuration is not allowed.
+	//   - If any identifier is required in the profile, it must be active during signup.
+	Attributes *ConnectionOptionsAttributes `json:"attributes,omitempty"`
+}
+
+// ConnectionOptionsAttributes defines the structure for attribute configurations.
+type ConnectionOptionsAttributes struct {
+	Email       *ConnectionOptionsEmailAttribute       `json:"email,omitempty"`
+	Username    *ConnectionOptionsUsernameAttribute    `json:"username,omitempty"`
+	PhoneNumber *ConnectionOptionsPhoneNumberAttribute `json:"phone_number,omitempty"`
+}
+
+// ConnectionOptionsAttributeIdentifier defines whether an attribute is active as an identifier.
+type ConnectionOptionsAttributeIdentifier struct {
+	Active *bool `json:"active"`
+}
+
+// ConnectionOptionsAttributeSignup defines signup settings for an attribute.
+type ConnectionOptionsAttributeSignup struct {
+	Status *string `json:"status"`
+
+	// Verification settings for an attribute. Only applicable to email and phone_number attributes.
+	Verification *ConnectionOptionsAttributeVerification `json:"verification,omitempty"`
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (c *ConnectionOptionsUsernameAttribute) MarshalJSON() ([]byte, error) {
+	type connectionOptionsUsernameAttribute ConnectionOptionsUsernameAttribute
+	alias := &struct {
+		*connectionOptionsUsernameAttribute
+	}{
+		connectionOptionsUsernameAttribute: (*connectionOptionsUsernameAttribute)(c),
+	}
+
+	if alias.Signup != nil {
+		alias.Signup.Verification = nil
+	}
+
+	return json.Marshal(alias)
+}
+
+// ConnectionOptionsAttributeVerification defines verification settings for an attribute.
+type ConnectionOptionsAttributeVerification struct {
+	Active *bool `json:"active"`
+}
+
+// ConnectionOptionsAttributeValidation defines validation settings for an attribute.
+type ConnectionOptionsAttributeValidation struct {
+	MinLength    *int                                    `json:"min_length,omitempty"`
+	MaxLength    *int                                    `json:"max_length,omitempty"`
+	AllowedTypes *ConnectionOptionsAttributeAllowedTypes `json:"allowed_types,omitempty"`
+}
+
+// ConnectionOptionsAttributeAllowedTypes defines allowed types for an attribute.
+type ConnectionOptionsAttributeAllowedTypes struct {
+	Email       *bool `json:"email"`
+	PhoneNumber *bool `json:"phone_number"`
+}
+
+// ConnectionOptionsEmailAttribute defines configuration settings for email attributes.
+type ConnectionOptionsEmailAttribute struct {
+	Identifier      *ConnectionOptionsAttributeIdentifier `json:"identifier,omitempty"`
+	ProfileRequired *bool                                 `json:"profile_required"`
+	Signup          *ConnectionOptionsAttributeSignup     `json:"signup,omitempty"`
+}
+
+// ConnectionOptionsUsernameAttribute defines configuration settings for username attributes.
+type ConnectionOptionsUsernameAttribute struct {
+	Identifier      *ConnectionOptionsAttributeIdentifier `json:"identifier,omitempty"`
+	ProfileRequired *bool                                 `json:"profile_required"`
+	Signup          *ConnectionOptionsAttributeSignup     `json:"signup,omitempty"`
+	Validation      *ConnectionOptionsAttributeValidation `json:"validation,omitempty"`
+}
+
+// ConnectionOptionsPhoneNumberAttribute defines configuration settings for phone number attributes.
+// This attribute is available only when the Prompt 'identifier first' setting is enabled.
+type ConnectionOptionsPhoneNumberAttribute struct {
+	Identifier      *ConnectionOptionsAttributeIdentifier `json:"identifier,omitempty"`
+	ProfileRequired *bool                                 `json:"profile_required"`
+	Signup          *ConnectionOptionsAttributeSignup     `json:"signup,omitempty"`
 }
 
 // AuthenticationMethods represents the options for enabling authentication methods for the connection.
@@ -897,20 +1092,92 @@ func (c *ConnectionOptionsOIDC) SetScopes(enable bool, scopes ...string) {
 
 // ConnectionOptionsOAuth2 is used to configure an OAuth2 Connection.
 type ConnectionOptionsOAuth2 struct {
-	ClientID           *string   `json:"client_id,omitempty"`
-	ClientSecret       *string   `json:"client_secret,omitempty"`
-	AuthorizationURL   *string   `json:"authorizationURL"`
-	TokenURL           *string   `json:"tokenURL"`
-	Scope              *string   `json:"scope,omitempty"`
-	SetUserAttributes  *string   `json:"set_user_root_attributes,omitempty"`
+	// ClientID is the OAuth2 client ID.
+	ClientID *string `json:"client_id,omitempty"`
+
+	// ClientSecret is the OAuth2 client secret.
+	ClientSecret *string `json:"client_secret,omitempty"`
+
+	// AuthorizationURL is the URL used for obtaining authorization from the user.
+	AuthorizationURL *string `json:"authorizationURL"`
+
+	// TokenURL is the URL used for obtaining the access token.
+	TokenURL *string `json:"tokenURL"`
+
+	// Scope indicates the OAuth2 scopes for the connection.
+	// Use SetScopes and Scopes to manage scopes.
+	Scope *string `json:"-"`
+
+	// SetUserAttributes specifies user root attributes.
+	SetUserAttributes *string `json:"set_user_root_attributes,omitempty"`
+
+	// NonPersistentAttrs specifies non-persistent attributes.
 	NonPersistentAttrs *[]string `json:"non_persistent_attrs,omitempty"`
-	LogoURL            *string   `json:"icon_url,omitempty"`
-	PKCEEnabled        *bool     `json:"pkce_enabled,omitempty"`
-	// Scripts for the connection
+
+	// LogoURL is the URL for the connection's icon.
+	LogoURL *string `json:"icon_url,omitempty"`
+
+	// PKCEEnabled specifies whether PKCE (Proof Key for Code Exchange) is enabled.
+	PKCEEnabled *bool `json:"pkce_enabled,omitempty"`
+
+	// Scripts contains scripts for the connection.
 	// Allowed keys are: "fetchUserProfile"
 	Scripts map[string]string `json:"scripts,omitempty"`
 
+	// UpstreamParams specifies upstream parameters.
 	UpstreamParams map[string]interface{} `json:"upstream_params,omitempty"`
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for ConnectionOptionsOAuth2.
+// It is required to handle differences in the scope field, which can
+// be an array of strings or a single string.
+func (c *ConnectionOptionsOAuth2) UnmarshalJSON(data []byte) error {
+	type connectionOptionsOAuth2 ConnectionOptionsOAuth2
+	type connectionOptionsOAuth2Wrapper struct {
+		*connectionOptionsOAuth2
+		RawScope interface{} `json:"scope,omitempty"`
+	}
+
+	alias := &connectionOptionsOAuth2Wrapper{(*connectionOptionsOAuth2)(c), nil}
+
+	err := json.Unmarshal(data, alias)
+	if err != nil {
+		return err
+	}
+
+	if alias.RawScope != nil {
+		switch rawScope := alias.RawScope.(type) {
+		case []interface{}:
+			scopes := make([]string, len(rawScope))
+			for i, v := range rawScope {
+				scopes[i] = v.(string)
+			}
+			c.Scope = auth0.String(strings.Join(scopes, " "))
+		case string:
+			c.Scope = auth0.String(rawScope)
+		default:
+			return fmt.Errorf("unexpected type for field scope: %T", alias.RawScope)
+		}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler interface for ConnectionOptionsOAuth2.
+func (c *ConnectionOptionsOAuth2) MarshalJSON() ([]byte, error) {
+	type connectionOptionsOAuth2 ConnectionOptionsOAuth2
+	type connectionOptionsOAuth2Wrapper struct {
+		*connectionOptionsOAuth2
+		RawScope interface{} `json:"scope,omitempty"`
+	}
+
+	alias := &connectionOptionsOAuth2Wrapper{(*connectionOptionsOAuth2)(c), nil}
+	if c.Scope != nil {
+		scopes := strings.Fields(*c.Scope)
+		alias.RawScope = scopes
+	}
+
+	return json.Marshal(alias)
 }
 
 // Scopes returns the scopes for ConnectionOptionsOAuth2.
@@ -1272,4 +1539,89 @@ func (m *ConnectionManager) ReadByName(ctx context.Context, name string, opts ..
 		return c.Connections[0], nil
 	}
 	return nil, &managementError{404, "Not Found", "Connection not found"}
+}
+
+// CreateSCIMConfiguration creates a SCIM configuration for a connection by its connection ID.
+//
+// Note: This method only works with the following enterprise connections:
+//   - Authentication > Enterprise > SAML
+//   - Authentication > Enterprise > OpenID Connect
+//   - Authentication > Enterprise > Okta Workforce
+//   - Authentication > Enterprise > Microsoft Azure AD
+//
+// Parameters:
+//   - scimConfig (optional): The SCIM configuration details. Only `mapping` and `user_id_attribute` fields are used.
+//     This parameter can be passed as nil or empty.
+//
+// `mapping`: Specifies a mapping between SCIM protocol user schema and Auth0 user schema.
+// If not provided, a default mapping based on the connection type (e.g., Okta, SAML) will be used.
+//
+// `user_id_attribute`: Specifies the SCIM attribute containing the unique user identifier
+// presented in the SAML assertion or ID token during user login. If not provided, it defaults to
+// `userName` for SAML connections and `externalId` for OIDC connections.
+//
+// For more details, see: https://auth0.com/docs/api/management/v2/connections/post-scim-configuration
+func (m *ConnectionManager) CreateSCIMConfiguration(ctx context.Context, id string, scimConfig *SCIMConfiguration, opts ...RequestOption) error {
+	return m.management.Request(ctx, "POST", m.management.URI("connections", id, "scim-configuration"), scimConfig, opts...)
+}
+
+// ReadSCIMConfiguration retrieves the SCIM configuration for a connection by its connection ID.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/get-scim-configuration
+func (m *ConnectionManager) ReadSCIMConfiguration(ctx context.Context, id string, opts ...RequestOption) (scim *SCIMConfiguration, err error) {
+	err = m.management.Request(ctx, "GET", m.management.URI("connections", id, "scim-configuration"), &scim, opts...)
+	return
+}
+
+// UpdateSCIMConfiguration updates the SCIM configuration for a connection by its connection ID.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/patch-scim-configuration
+func (m *ConnectionManager) UpdateSCIMConfiguration(ctx context.Context, id string, scimConfig *SCIMConfiguration, opts ...RequestOption) error {
+	return m.management.Request(ctx, "PATCH", m.management.URI("connections", id, "scim-configuration"), scimConfig, opts...)
+}
+
+// DeleteSCIMConfiguration deletes the SCIM configuration for a connection by its connection ID.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/delete-scim-configuration
+func (m *ConnectionManager) DeleteSCIMConfiguration(ctx context.Context, id string, opts ...RequestOption) error {
+	return m.management.Request(ctx, "DELETE", m.management.URI("connections", id, "scim-configuration"), nil, opts...)
+}
+
+// ReadSCIMDefaultConfiguration retrieves a SCIM configuration's default mapping by its connection ID.
+// This method only works with enterprise connections.
+//
+// https://auth0.com/docs/api/management/v2/connections/get-default-mapping
+func (m *ConnectionManager) ReadSCIMDefaultConfiguration(ctx context.Context, id string, opts ...RequestOption) (scim *SCIMConfiguration, err error) {
+	err = m.management.Request(ctx, "GET", m.management.URI("connections", id, "scim-configuration", "default-mapping"), &scim, opts...)
+	return
+}
+
+// CreateSCIMToken create a SCIM token for a scim client.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/post-scim-token
+func (m *ConnectionManager) CreateSCIMToken(ctx context.Context, id string, scimToken *SCIMToken, opts ...RequestOption) (err error) {
+	err = m.management.Request(ctx, "POST", m.management.URI("connections", id, "scim-configuration", "tokens"), scimToken, opts...)
+	return
+}
+
+// ListSCIMToken retrieves all SCIM tokens by its connection ID.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/get-scim-tokens
+func (m *ConnectionManager) ListSCIMToken(ctx context.Context, id string, opts ...RequestOption) (scimTokens []*SCIMToken, err error) {
+	err = m.management.Request(ctx, "GET", m.management.URI("connections", id, "scim-configuration", "tokens"), &scimTokens, opts...)
+	return
+}
+
+// DeleteSCIMToken deletes a SCIM token by its connection ID and token id.
+// This method only works with enterprise connections.
+//
+// See: https://auth0.com/docs/api/management/v2/connections/delete-scim-token
+func (m *ConnectionManager) DeleteSCIMToken(ctx context.Context, id, tokenID string, opts ...RequestOption) (err error) {
+	err = m.management.Request(ctx, "DELETE", m.management.URI("connections", id, "scim-configuration", "tokens", tokenID), nil, opts...)
+	return
 }

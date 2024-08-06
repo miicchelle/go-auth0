@@ -29,6 +29,21 @@ var connectionTestCases = []connectionTestCase{
 		},
 	},
 	{
+		name: "Wordpress Connection",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Wordpress-Connection-%d", time.Now().Unix()),
+			Strategy: auth0.String("wordpress"),
+		},
+		options: &ConnectionOptionsOAuth2{
+			Scope: auth0.String("email profile openid"),
+			UpstreamParams: map[string]interface{}{
+				"screen_name": map[string]interface{}{
+					"alias": "login_hint",
+				},
+			},
+		},
+	},
+	{
 		name: "GoogleOAuth2 Connection",
 		connection: Connection{
 			Name:     auth0.Stringf("Test-GoogleOAuth2-Connection-%d", time.Now().Unix()),
@@ -367,6 +382,7 @@ ZsUkLw2I7zI/dNlWdB8Xp7v+3w9sX5N3J/WuJ1KOO5m26kRlHQo7EzT3974g
 			AuthorizationEndpoint: auth0.String("https://example.com"),
 			JWKSURI:               auth0.String("https://example.com/jwks"),
 			Type:                  auth0.String("front_channel"),
+			DiscoveryURL:          auth0.String("https://www.paypalobjects.com/.well-known/openid-configuration"),
 			UpstreamParams: map[string]interface{}{
 				"screen_name": map[string]interface{}{
 					"alias": "login_hint",
@@ -456,6 +472,260 @@ func TestConnectionManager_Create(t *testing.T) {
 			t.Cleanup(func() {
 				cleanupConnection(t, expectedConnection.GetID())
 			})
+		})
+	}
+}
+
+var Auth0ConnectionTestCase = []connectionTestCase{
+	{
+		name: "Auth0 Connection With RequireUsername",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-RequireUsername-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence:       &[]string{"username", "email", "phone_number"},
+			RequiresUsername: auth0.Bool(true),
+		},
+	},
+	{
+		name: "Auth0 Connection with PhoneNumber as Identifier",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Phone-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				PhoneNumber: &ConnectionOptionsPhoneNumberAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection with Email as Identifier",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Email-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				Email: &ConnectionOptionsEmailAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection with Username as Identifier",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Username-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				Username: &ConnectionOptionsUsernameAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection Cannot set both requires_username and attributes together",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Invalid-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence:       &[]string{"username", "email", "phone_number"},
+			RequiresUsername: auth0.Bool(true),
+			Attributes: &ConnectionOptionsAttributes{
+				Email: &ConnectionOptionsEmailAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection With No attribute is active",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-No-Active-Attributes-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				PhoneNumber: &ConnectionOptionsPhoneNumberAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(false),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+				Email: &ConnectionOptionsEmailAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(false),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+				Username: &ConnectionOptionsUsernameAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(false),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+					},
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection Cannot set both validation and attributes together",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Attributes-And-Validation-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				Email: &ConnectionOptionsEmailAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+				Username: &ConnectionOptionsUsernameAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("required"),
+					},
+				},
+			},
+			Validation: map[string]interface{}{
+				"username": map[string]interface{}{
+					"min": 1,
+					"max": 5,
+				},
+			},
+		},
+	},
+	{
+		name: "Auth0 Connection Attribute required in profile but inactive on signup",
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Auth0-Connection-Attribute-Inactive-On-Signup-%d", time.Now().Unix()),
+			Strategy: auth0.String("auth0"),
+		},
+		options: &ConnectionOptions{
+			Precedence: &[]string{"username", "email", "phone_number"},
+			Attributes: &ConnectionOptionsAttributes{
+				PhoneNumber: &ConnectionOptionsPhoneNumberAttribute{
+					Identifier: &ConnectionOptionsAttributeIdentifier{
+						Active: auth0.Bool(true),
+					},
+					ProfileRequired: auth0.Bool(true),
+					Signup: &ConnectionOptionsAttributeSignup{
+						Status: auth0.String("inactive"),
+						Verification: &ConnectionOptionsAttributeVerification{
+							Active: auth0.Bool(false),
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
+func TestConnectionManager_CreateDBConnectionWithDifferentOptions(t *testing.T) {
+	for _, testCase := range Auth0ConnectionTestCase {
+		t.Run("It handles "+testCase.name, func(t *testing.T) {
+			configureHTTPTestRecordings(t)
+
+			expectedConnection := testCase.connection
+			expectedConnection.Options = testCase.options
+
+			err := api.Connection.Create(context.Background(), &expectedConnection)
+
+			switch testCase.name {
+			case "Auth0 Connection Cannot set both requires_username and attributes together":
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "Cannot set both options.attributes and options.requires_username")
+			case "Auth0 Connection With No attribute is active":
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "attributes must contain one active identifier")
+			case "Auth0 Connection Cannot set both validation and attributes together":
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "Cannot set both options.attributes and options.validation")
+			case "Auth0 Connection Attribute required in profile but inactive on signup":
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "attribute phone_number must also be required on signup")
+			default:
+				assert.NoError(t, err)
+				assert.NotEmpty(t, expectedConnection.Name)
+				assert.NotEmpty(t, expectedConnection.Strategy)
+			}
+
+			if err == nil {
+				t.Cleanup(func() {
+					cleanupConnection(t, expectedConnection.GetID())
+				})
+			}
 		})
 	}
 }
@@ -611,6 +881,266 @@ func TestConnectionOptionsScopes(t *testing.T) {
 	})
 }
 
+func TestConnectionManager_CreateSCIMConfiguration(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+	expectedSCIMConfig := &SCIMConfiguration{
+		Mapping: &[]SCIMConfigurationMapping{
+			{SCIM: auth0.String("userName"), Auth0: auth0.String("username")},
+			{SCIM: auth0.String("email"), Auth0: auth0.String("email")},
+		},
+		UserIDAttribute: auth0.String("userName"),
+	}
+	err := api.Connection.CreateSCIMConfiguration(context.Background(), expectedConnection.GetID(), expectedSCIMConfig)
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMConfiguration(context.Background(), expectedConnection.GetID())
+	assert.NoError(t, err)
+	assert.Equal(t, expectedConnection.GetID(), actualSCIMConfiguration.GetConnectionID())
+	assert.IsType(t, &SCIMConfiguration{}, actualSCIMConfiguration)
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_CreateSCIMConfigurationWithoutBody(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+	expectedSCIMConfig := &SCIMConfiguration{}
+	err := api.Connection.CreateSCIMConfiguration(context.Background(), expectedConnection.GetID(), expectedSCIMConfig)
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMConfiguration(context.Background(), expectedConnection.GetID())
+	assert.NoError(t, err)
+	assert.Equal(t, expectedConnection.GetID(), actualSCIMConfiguration.GetConnectionID())
+	assert.IsType(t, &SCIMConfiguration{}, actualSCIMConfiguration)
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_UpdateSCIMConfiguration(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+	expectedSCIMConfig := givenASCIMConfiguration(t, expectedConnection.GetID())
+	assert.Equal(t, expectedConnection.GetID(), expectedSCIMConfig.GetConnectionID())
+	expectedSCIMConfig = &SCIMConfiguration{
+		Mapping: &[]SCIMConfigurationMapping{
+			{SCIM: auth0.String("userName"), Auth0: auth0.String("username")},
+			{SCIM: auth0.String("email"), Auth0: auth0.String("email")},
+		},
+		UserIDAttribute: auth0.String("userName"),
+	}
+
+	err := api.Connection.UpdateSCIMConfiguration(context.Background(), expectedConnection.GetID(), expectedSCIMConfig)
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMConfiguration(context.Background(), expectedConnection.GetID())
+	assert.NoError(t, err)
+	assert.Equal(t, expectedSCIMConfig, actualSCIMConfiguration)
+	assert.Equal(t, expectedConnection.GetID(), actualSCIMConfiguration.GetConnectionID())
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_DeleteSCIMConfiguration(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+
+	expectedSCIMConfiguration := givenASCIMConfiguration(t, expectedConnection.GetID())
+
+	err := api.Connection.DeleteSCIMConfiguration(context.Background(), expectedSCIMConfiguration.GetConnectionID())
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMConfiguration(context.Background(), expectedSCIMConfiguration.GetConnectionID())
+	assert.Nil(t, actualSCIMConfiguration)
+	assert.Error(t, err)
+	assert.Equal(t, http.StatusNotFound, err.(Error).Status())
+}
+
+func TestConnectionManager_ReadSCIMConfiguration(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+
+	expectedSCIMConfig := &SCIMConfiguration{
+		Mapping: &[]SCIMConfigurationMapping{
+			{SCIM: auth0.String("userName"), Auth0: auth0.String("username")},
+			{SCIM: auth0.String("email"), Auth0: auth0.String("email")},
+		},
+		UserIDAttribute: auth0.String("userName"),
+	}
+	err := api.Connection.CreateSCIMConfiguration(context.Background(), expectedConnection.GetID(), expectedSCIMConfig)
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMConfiguration(context.Background(), expectedSCIMConfig.GetConnectionID())
+	assert.NoError(t, err)
+	assert.Equal(t, expectedConnection.GetID(), actualSCIMConfiguration.GetConnectionID())
+	assert.Equal(t, expectedSCIMConfig, actualSCIMConfiguration)
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_ReadSCIMDefaultConfiguration(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+
+	expectedSCIMConfig := &SCIMConfiguration{}
+	err := api.Connection.CreateSCIMConfiguration(context.Background(), expectedConnection.GetID(), expectedSCIMConfig)
+	assert.NoError(t, err)
+
+	actualSCIMConfiguration, err := api.Connection.ReadSCIMDefaultConfiguration(context.Background(), expectedSCIMConfig.GetConnectionID())
+	assert.NoError(t, err)
+	assert.Equal(t, expectedSCIMConfig.GetMapping(), actualSCIMConfiguration.GetMapping())
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_CreateSCIMToken(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+	expectedSCIMConfig := givenASCIMConfiguration(t, expectedConnection.GetID())
+
+	SCIMTokenPayload := &SCIMToken{
+		Scopes: &[]string{"get:users", "post:users", "put:users", "patch:users"},
+	}
+
+	err := api.Connection.CreateSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID(), SCIMTokenPayload)
+	assert.NoError(t, err)
+
+	assert.NotEmpty(t, SCIMTokenPayload.GetToken())
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_ListSCIMTokens(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+
+	expectedSCIMConfig := givenASCIMConfiguration(t, expectedConnection.GetID())
+
+	SCIMTokenPayload := &SCIMToken{
+		Scopes: &[]string{"get:users", "post:users", "put:users", "patch:users"},
+	}
+
+	err := api.Connection.CreateSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID(), SCIMTokenPayload)
+	assert.NoError(t, err)
+
+	SCIMTokenPayload.Token = nil
+
+	actualSCIMTokens, err := api.Connection.ListSCIMToken(context.Background(), expectedConnection.GetID())
+	assert.NoError(t, err)
+
+	assert.Contains(t, actualSCIMTokens, SCIMTokenPayload)
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+
+func TestConnectionManager_DeleteSCIMToken(t *testing.T) {
+	configureHTTPTestRecordings(t)
+
+	expectedConnection := givenAOktaConnection(t)
+	expectedSCIMConfig := givenASCIMConfiguration(t, expectedConnection.GetID())
+
+	expectedSCIMToken := &SCIMToken{
+		Scopes: &[]string{"get:users", "post:users", "put:users", "patch:users"},
+	}
+
+	err := api.Connection.CreateSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID(), expectedSCIMToken)
+	assert.NoError(t, err)
+
+	expectedSCIMToken.Token = nil
+
+	actualSCIMTokens, err := api.Connection.ListSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID())
+	assert.NoError(t, err)
+
+	assert.Contains(t, actualSCIMTokens, expectedSCIMToken)
+
+	err = api.Connection.DeleteSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID(), expectedSCIMToken.GetTokenID())
+	assert.NoError(t, err)
+
+	actualSCIMTokens, err = api.Connection.ListSCIMToken(context.Background(), expectedSCIMConfig.GetConnectionID())
+	assert.NoError(t, err)
+	assert.Empty(t, actualSCIMTokens)
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, expectedConnection.GetID())
+	})
+}
+func TestConnectionOptionsUsernameAttribute_MarshalJSON(t *testing.T) {
+	for attribute, expected := range map[*ConnectionOptionsUsernameAttribute]string{
+		{
+			Identifier: &ConnectionOptionsAttributeIdentifier{
+				Active: auth0.Bool(true),
+			},
+			ProfileRequired: auth0.Bool(true),
+			Signup: &ConnectionOptionsAttributeSignup{
+				Status:       auth0.String("required"),
+				Verification: &ConnectionOptionsAttributeVerification{Active: auth0.Bool(false)},
+			},
+		}: `{"identifier":{"active":true},"profile_required":true,"signup":{"status":"required"}}`,
+		{
+			ProfileRequired: auth0.Bool(true),
+			Signup: &ConnectionOptionsAttributeSignup{
+				Status: auth0.String("required"),
+			},
+		}: `{"profile_required":true,"signup":{"status":"required"}}`,
+
+		{
+			Identifier: &ConnectionOptionsAttributeIdentifier{
+				Active: auth0.Bool(true),
+			},
+			ProfileRequired: auth0.Bool(true),
+		}: `{"identifier":{"active":true},"profile_required":true}`,
+	} {
+		payload, err := json.Marshal(attribute)
+		assert.NoError(t, err)
+		assert.JSONEq(t, expected, string(payload))
+	}
+}
+
+func TestOAuth2Connection_MarshalJSON(t *testing.T) {
+	for connection, expected := range map[*ConnectionOptionsOAuth2]string{
+		{Scope: auth0.String("foo bar baz")}: `{"authorizationURL":null,"tokenURL":null,"scope":["foo","bar","baz"]}`,
+		{Scope: auth0.String("")}:            `{"authorizationURL":null,"tokenURL":null,"scope":[]}`,
+		{Scope: nil}:                         `{"authorizationURL":null,"tokenURL":null}`,
+	} {
+		payload, err := json.Marshal(connection)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, string(payload))
+	}
+}
+
+func TestOAuth2Connection_UnmarshalJSON(t *testing.T) {
+	for expectedAsString, expected := range map[string]*ConnectionOptionsOAuth2{
+		`{"scope":["foo","bar","baz"]}`: {Scope: auth0.String("foo bar baz")},
+		`{"scope":null}`:                {Scope: nil},
+		`{}`:                            {},
+		`{"scope":[]}`:                  {Scope: auth0.String("")},
+	} {
+		var actual *ConnectionOptionsOAuth2
+		err := json.Unmarshal([]byte(expectedAsString), &actual)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, actual)
+	}
+}
+
 func TestGoogleOauth2Connection_MarshalJSON(t *testing.T) {
 	var emptySlice []string
 	for connection, expected := range map[*ConnectionOptionsGoogleOAuth2]string{
@@ -654,6 +1184,13 @@ func cleanupConnection(t *testing.T, connectionID string) {
 	require.NoError(t, err)
 }
 
+func cleanupSCIMConfig(t *testing.T, connectionID string) {
+	t.Helper()
+
+	err := api.Connection.DeleteSCIMConfiguration(context.Background(), connectionID)
+	require.NoError(t, err)
+}
+
 func givenAConnection(t *testing.T, testCase connectionTestCase) *Connection {
 	t.Helper()
 
@@ -668,4 +1205,43 @@ func givenAConnection(t *testing.T, testCase connectionTestCase) *Connection {
 	})
 
 	return &connection
+}
+
+func givenASCIMConfiguration(t *testing.T, connectionID string) *SCIMConfiguration {
+	t.Helper()
+
+	expectedSCIMConfig := &SCIMConfiguration{}
+
+	err := api.Connection.CreateSCIMConfiguration(context.Background(), connectionID, expectedSCIMConfig)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		cleanupSCIMConfig(t, connectionID)
+	})
+
+	return expectedSCIMConfig
+}
+
+func givenAOktaConnection(t *testing.T) *Connection {
+	t.Helper()
+	return givenAConnection(t, connectionTestCase{
+		connection: Connection{
+			Name:     auth0.Stringf("Test-Okta-Connection-%d", time.Now().Unix()),
+			Strategy: auth0.String("okta"),
+		},
+		options: &ConnectionOptionsOkta{
+			ClientID:              auth0.String("4ef8d976-71bd-4473-a7ce-087d3f0fafd8"),
+			ClientSecret:          auth0.String("mySecret"),
+			Scope:                 auth0.String("openid"),
+			Domain:                auth0.String("domain.okta.com"),
+			Issuer:                auth0.String("https://example.com"),
+			AuthorizationEndpoint: auth0.String("https://example.com"),
+			JWKSURI:               auth0.String("https://example.com/jwks"),
+			UpstreamParams: map[string]interface{}{
+				"screen_name": map[string]interface{}{
+					"alias": "login_hint",
+				},
+			},
+		},
+	})
 }
